@@ -57,10 +57,22 @@ tasks.register('copyReleaseNotesAssets', Copy) {
     into layout.buildDirectory.dir('site/releasenotes/img')
 }
 
+tasks.register('copyWikiAssets', Copy) {
+    from file('../site/src/site/wiki/img')
+    into layout.buildDirectory.dir('site/wiki/img')
+}
+
+tasks.register('copyBlogAssets', Copy) {
+    from file('../site/src/site/blog/img')
+    into layout.buildDirectory.dir('site/blog/img')
+}
+
 tasks.register('generateSite', JavaExec) {
     description = 'Generates the Groovy User Website'
     dependsOn copyAssets
     dependsOn copyReleaseNotesAssets
+    dependsOn copyWikiAssets
+    dependsOn copyBlogAssets
     ext.sources = file('../site/src/site')
     ext.outputDir = layout.buildDirectory.dir('site')
 

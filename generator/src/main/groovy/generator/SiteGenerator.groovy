@@ -207,6 +207,7 @@ class SiteGenerator {
         render 'releases', 'releases', [versions: releaseNotesVersions]
     }
 
+    @CompileDynamic
     private void renderWiki() {
         def asciidoctor = AsciidoctorFactory.instance
         println "Rendering wiki"
@@ -227,14 +228,26 @@ class SiteGenerator {
                     relativePath << p.name
                     p = p.parentFile
                 }
-                String baseDir = relativePath ? "wiki${File.separator}${relativePath.join(File.separator)}" : 'wiki'
+                String baseDir = relativePath ? "wiki/${relativePath.join('/')}" : 'wiki'
                 render 'wiki', bn, [notes: f.getText('utf-8'), doc: doc], baseDir
                 if (f.name.startsWith('GEP-')) {
                     gepList[bn] = doc.structuredDoctitle.subtitle
                 }
             }
         }
-        render 'geps', "geps", [list: gepList], 'wiki'
+
+        def jiraGeps = []
+        try {
+            def gepsJson = new groovy.json.JsonSlurper().parseText(
+                new URL('https://issues.apache.org/jira/rest/api/2/search?jql=component=GEP%20and%20project=GROOVY')
+                    .getText(connectTimeout: 10000, readTimeout: 30000, 'UTF-8')
+            )
+            jiraGeps = gepsJson.issues
+        } catch (Exception ignore) {
+            // Jira may not be reachable during local builds
+        }
+
+        render 'geps', "geps", [list: gepList, jiraGeps: jiraGeps], 'wiki'
     }
 
     private void renderBlog() {
@@ -414,9 +427,11 @@ class SiteGenerator {
         def url = new URL(u)
         HttpURLConnection.setFollowRedirects(false)
         HttpURLConnection connection = (HttpURLConnection) url.openConnection()
-        connection.setRequestMethod("HEAD")
+        connection.connectTimeout = 5000
+        connection.readTimeout = 5000
+        connection.setRequestMethod('HEAD')
         // pretend to be a browser to keep fussy websites a little happier
-        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)")
-        return connection.responseCode == HttpURLConnection.HTTP_OK
+        connection.setRequestProperty('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)')
+        connection.responseCode == HttpURLConnection.HTTP_OK
     }
 }

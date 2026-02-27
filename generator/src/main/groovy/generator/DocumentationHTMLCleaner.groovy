@@ -43,7 +43,7 @@ class DocumentationHTMLCleaner {
     private static String cleanupPage(String location) {
         def url = location.toURL()
         try {
-            def fullHTML = url.getText('utf-8')
+            def fullHTML = url.getText(connectTimeout: 10000, readTimeout: 30000, 'utf-8')
             return extractBetween(fullHTML, BODY_START, BODY_END)
         } catch (FileNotFoundException e) {
             // 404 not found

@@ -74,7 +74,7 @@ layout 'layouts/main.groovy', true,
                                     div(style: "display:flex;padding:0.2ex") {
                                         def multiple = doc.authors.size() > 1
                                         span("Author${multiple ? 's' : ''}:&nbsp;")
-                                        yieldUnescaped doc.authors.collect(DocUtils.&prettyAuthors).join('<span style="width:2ex"></span>')
+                                        yieldUnescaped doc.authors.collect { DocUtils.prettyAuthors(it, this.&relative) }.join('<span style="width:2ex"></span>')
                                     }
                                 }
                                 if (doc.revisionInfo?.date) {

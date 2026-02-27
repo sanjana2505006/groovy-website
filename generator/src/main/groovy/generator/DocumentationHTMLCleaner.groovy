@@ -102,7 +102,7 @@ class DocumentationHTMLCleaner {
             if (end>0) {
                 def out = html.substring(start, end).replace("<div id=\"toctitle\">Table of Contents</div>", "")
                 end = out.size()-1
-                while (!out.substring(end, out.size()).startsWith('</div>')) end--
+                while (end > 0 && !out.substring(end, out.size()).startsWith('</div>')) end--
                 return out.substring(0, end)
             }
         }

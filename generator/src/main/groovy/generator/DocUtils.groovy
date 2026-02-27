@@ -24,14 +24,21 @@ class DocUtils {
     private static final PRETTY = "yyyy-MM-dd hh:mmaa"
 
     static String prettyDate(String s) {
-        Date.parse(RFC3339, s).format(PRETTY)
+        try {
+            Date.parse(RFC3339, s).format(PRETTY)
+        } catch (e) {
+            s
+        }
     }
 
-    static String prettyAuthors(author) {
+    static String prettyAuthors(author, Closure relativize = { it }) {
         if (!author.email) return "<i>$author.fullName</i>"
-        def (githubId, role) = author.email.split(/\|/)
+        def parts = author.email.split(/\|/)
+        if (parts.size() < 2) return "<i>$author.fullName</i>"
+        def (githubId, role) = parts
+        def imgPath = relativize("img/${githubId}.png")
         """
-<a href="https://github.com/$githubId/" target="_blank" rel="noopener noreferrer"><img style="border-radius:50%;height:48px;width:auto" src="img/${githubId}.png" alt="${author.fullName}"></a>
+<a href="https://github.com/$githubId/" target="_blank" rel="noopener noreferrer"><img style="border-radius:50%;height:48px;width:auto" src="$imgPath" alt="${author.fullName}"></a>
 <div style="display:grid;align-items:center;margin:0.1ex;padding:0ex">
   <div><a href="https://github.com/$githubId/" target="_blank" rel="noopener noreferrer"><span>${author.fullName}</span></a></div>
   <div><small><i>${role.replace('_', ' ')}</i></small></div>

@@ -246,8 +246,7 @@ assert method(true) == 2
 == AST Transformations
 
 Although at times, it may sound like a good idea to extend the syntax of
-Groovy to implement new features (as is the case, for instance, for
-multiple assignments), most of the time, we can't just add a new keyword
+Groovy to implement new features (as is the case, for instance, for the `List` and `Map` definitions or for the `import` statements), most of the time, we can't just add a new keyword
 to the grammar, or create some new syntax construct to represent a new
 concept. However, with the idea of AST (Abstract Syntax Tree)
 Transformations, we are able to tackle new and innovative ideas without

@@ -1,0 +1,136 @@
+/* Modern Design System for Apache Groovy */
+:root {
+    /* Color Palette (HSL) */
+    --primary-h: 210;
+    --primary-s: 100%;
+    --primary-l: 50%;
+    --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+    --primary-light: hsl(var(--primary-h), var(--primary-s), 95%);
+    --primary-dark: hsl(var(--primary-h), var(--primary-s), 30%);
+
+    --secondary-h: 280;
+    --secondary-s: 80%;
+    --secondary-l: 60%;
+    --secondary: hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l));
+
+    --accent-h: 190;
+    --accent-s: 100%;
+    --accent-l: 50%;
+    --accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+
+    --text-main: #1a1a1a;
+    --text-muted: #666666;
+    --bg-main: #ffffff;
+    --bg-glass: rgba(255, 255, 255, 0.8);
+
+    /* Shadows & Depth */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.12);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glassmorphism Navbar */
+.navbar {
+    background: var(--bg-glass) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    transition: var(--transition-smooth);
+}
+
+.navbar .nav>li>a {
+    color: var(--text-main) !important;
+    font-weight: 500;
+    transition: var(--transition-smooth);
+    border-radius: 8px;
+}
+
+.navbar .nav>li>a:hover {
+    background: var(--primary-light) !important;
+    color: var(--primary) !important;
+}
+
+/* Modern Hero Section (.band) */
+.band {
+    background: linear-gradient(135deg,
+            hsl(var(--primary-h), 80%, 40%),
+            hsl(var(--secondary-h), 70%, 50%),
+            hsl(var(--accent-h), 90%, 40%)) !important;
+    padding: 100px 0 !important;
+    color: white !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.band::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.band h1 {
+    font-weight: 800 !important;
+    letter-spacing: -0.02em !important;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Premium Cards */
+.well,
+.card {
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-radius: 16px !important;
+    background: var(--bg-main) !important;
+    box-shadow: var(--shadow-sm) !important;
+    transition: var(--transition-smooth) !important;
+}
+
+.well:hover,
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg) !important;
+    border-color: var(--primary) !important;
+}
+
+/* Dynamic Buttons */
+.btn-primary {
+    background: var(--primary) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 12px 28px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 14px 0 rgba(0, 118, 255, 0.39) !important;
+    transition: var(--transition-smooth) !important;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 118, 255, 0.45) !important;
+    filter: brightness(1.1);
+}
+
+/* Micro-interactions */
+a {
+    transition: var(--transition-smooth);
+}
+
+/* Typography Enhancements */
+body {
+    font-family: 'Outfit', 'Noto Sans', sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+    letter-spacing: -0.01em;
+}

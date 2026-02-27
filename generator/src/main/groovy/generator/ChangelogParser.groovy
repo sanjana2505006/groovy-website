@@ -18,6 +18,7 @@
  */
 package generator
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import model.Changelog
 import model.Issue
@@ -43,8 +44,7 @@ class ChangelogParser {
     ]
 
     static List<Changelog> fetchReleaseNotes(File cacheDirectory) {
-        def slurper = new JsonSlurper()
-        def versions = slurper.parse("$JIRA_SERVER/rest/api/2/project/$PROJECT_NAME/versions".toURL())
+        def versions = new JsonSlurper().parseText(new URL("$JIRA_SERVER/rest/api/2/project/$PROJECT_NAME/versions").getText(connectTimeout: 10000, readTimeout: 30000, 'UTF-8'))
         def versionMap = versions.findAll {
             it.name =~ VERSION_PATTERN &&
                     it.released == true
@@ -103,7 +103,8 @@ class ChangelogParser {
         if (cache.exists()) {
             log = cache.getText('UTF-8')
         } else {
-            log = new URL("$JIRA_SERVER/secure/ReleaseNote.jspa?version=$id&styleName=Text&projectId=$PROJECT_ID").getText('UTF-8')
+            def u = new URL("$JIRA_SERVER/secure/ReleaseNote.jspa?version=$id&styleName=Text&projectId=$PROJECT_ID")
+            log = u.getText(requestProperties: ['User-Agent': 'Groovy Website Builder'], connectTimeout: 10000, readTimeout: 30000, 'UTF-8')
             cache.write(log, 'UTF-8')
         }
         boolean inNotes = false
@@ -125,8 +126,21 @@ class ChangelogParser {
                 }
             }
         }
-        def json = new JsonSlurper().parse("$JIRA_SERVER/rest/api/2/search?jql=labels%20in%20(breaking)%20and%20fixVersion%20in%20($id)%20and%20project=GROOVY".toURL())
-        def keys = json.issues*.key
+
+        def breakingCache = new File(cacheDir, "breaking-${id}.json")
+        def keys = []
+        try {
+            if (breakingCache.exists()) {
+                keys = new JsonSlurper().parse(breakingCache).keys ?: []
+            } else {
+                def result = new JsonSlurper().parseText(new URL("$JIRA_SERVER/rest/api/2/search?jql=labels%20in%20(breaking)%20and%20fixVersion%20in%20(${id})%20and%20project=GROOVY").getText(connectTimeout: 10000, readTimeout: 30000, 'UTF-8'))
+                keys = result.issues*.key ?: []
+                breakingCache.write(JsonOutput.toJson([keys: keys]), 'UTF-8')
+            }
+        } catch (Exception e) {
+            println "Warning: could not fetch breaking changes for $id: $e.message"
+        }
+        
         issues.findAll{ it.id in keys }.each{ it.description += ' *' }
         issues
     }
